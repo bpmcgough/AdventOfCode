@@ -58,4 +58,42 @@ let allocator = (input)=>{
   return redistributionCount;
 }
 
-allocator(inputBlock)
+//// PART 2 ////
+let allocator2 = (input)=>{
+  let previousBlocks = {};
+  let redistributionCount = 0;
+  while(!previousBlocks[input.toString()]){
+    redistributionCount++;
+    // add current configuration to known blocks
+    previousBlocks[input.toString()] = redistributionCount;
+    // find max of input and it's index
+    let inputMax = Math.max.apply(null, input);
+    let inputMaxIndex = input.indexOf(inputMax);
+    // zero out max
+    input[inputMaxIndex] = 0;
+
+    let currentIndex;
+    // we will first act on instruction after inputMaxIndex, need to go back to beginning of set if at end
+    if(inputMaxIndex < input.length - 1){
+      currentIndex = inputMaxIndex + 1;
+    } else {
+      currentIndex = 0;
+    }
+    
+    for(let i = 0; i < inputMax; i++){
+      // add one to number after currentIndex
+      input[currentIndex]++;
+      // add one to currentIndex if not at the end
+      if(currentIndex < input.length - 1){
+        // if not at end, move forward
+        currentIndex++;
+      } else {
+        // if at end, reset currentIndex to 0
+        currentIndex = 0;
+      }
+    }
+  }
+  return redistributionCount - previousBlocks[input] + 1;
+}
+
+
