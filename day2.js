@@ -1,3 +1,43 @@
+// As you walk through the door, a glowing humanoid shape yells in your direction. "You there! Your state appears to be idle. Come help us repair the corruption in this spreadsheet - if we take another millisecond, we'll have to display an hourglass cursor!"
+
+// The spreadsheet consists of rows of apparently-random numbers. To make sure the recovery process is on the right track, they need you to calculate the spreadsheet's checksum. For each row, determine the difference between the largest value and the smallest value; the checksum is the sum of all of these differences.
+
+// For example, given the following spreadsheet:
+
+// 5 1 9 5
+// 7 5 3
+// 2 4 6 8
+// The first row's largest and smallest values are 9 and 1, and their difference is 8.
+// The second row's largest and smallest values are 7 and 3, and their difference is 4.
+// The third row's difference is 6.
+// In this example, the spreadsheet's checksum would be 8 + 4 + 6 = 18.
+
+// What is the checksum for the spreadsheet in your puzzle input?
+
+// Your puzzle answer was 51833.
+
+// --- Part Two ---
+
+// "Great work; looks like we're on the right track after all. Here's a star for your effort." However, the program seems a little worried. Can programs be worried?
+
+// "Based on what we're seeing, it looks like all the User wanted is some information about the evenly divisible values in the spreadsheet. Unfortunately, none of us are equipped for that kind of calculation - most of us specialize in bitwise operations."
+
+// It sounds like the goal is to find the only two numbers in each row where one evenly divides the other - that is, where the result of the division operation is a whole number. They would like you to find those numbers on each line, divide them, and add up each line's result.
+
+// For example, given the following spreadsheet:
+
+// 5 9 2 8
+// 9 4 7 3
+// 3 8 6 5
+// In the first row, the only two numbers that evenly divide are 8 and 2; the result of this division is 4.
+// In the second row, the two numbers are 9 and 3; the result is 3.
+// In the third row, the result is 2.
+// In this example, the sum of the results would be 4 + 3 + 2 = 9.
+
+// What is the sum of each row's result in your puzzle input?
+
+// Your puzzle answer was 288.
+
 let rowArray = [[168,3925,858,2203,440,185,2886,160,1811,4272,4333,2180,174,157,361,1555],
 [150,111,188,130,98,673,408,632,771,585,191,92,622,158,537,142],
 [5785,5174,1304,3369,3891,131,141,5781,5543,4919,478,6585,116,520,673,112],
@@ -15,6 +55,7 @@ let rowArray = [[168,3925,858,2203,440,185,2886,160,1811,4272,4333,2180,174,157,
 [219,3933,6626,2137,3222,1637,5312,238,5895,222,154,6649,169,6438,3435,4183],
 [37,1069,166,1037,172,258,1071,90,497,1219,145,1206,143,153,1067,510]];
 
+// part one
 let checksummer = (rows)=>{
   let differences = [];
   rows.forEach((row, i)=>{
@@ -25,4 +66,31 @@ let checksummer = (rows)=>{
   return differences.reduce((a, b) => a + b);
 }
 
-checksummer(rowArray);
+// part two
+let checksummerDos = (rows)=>{
+  let differences = [];
+  rows.forEach((row, i)=>{
+    // sort high to low
+    // take largest number, divide by smallest number
+    // if this divides to whole number, great
+    // if not, keep ascending until the divisor is more than half of the divided number
+    row = row.sort((a,b)=>b-a);
+    let foundDivisor = false;
+    let dividedIndex = 0;
+    while(!foundDivisor){
+      let divisorIndex = row.length - 1;
+      // start at the end each time
+      // once row[divisorIndex] is greater than row[dividedIndex] / 2 we know that row[divisorIndex] can't be the number we need since it wouldn't divide evenly
+      while(row[divisorIndex] < row[dividedIndex] / 2 && !foundDivisor){
+        if(row[dividedIndex] % row[divisorIndex] === 0){
+          foundDivisor = true;
+          differences.push(row[dividedIndex] / row[divisorIndex]);
+        } else {
+          divisorIndex--;
+        }
+      }
+      dividedIndex++;
+    }
+  });
+  return differences.reduce((a, b) => a + b);
+}
